@@ -1,4 +1,7 @@
 <?php
+use Illuminate\Foundation\Testing\RefreshDatabase;
+
+uses(RefreshDatabase::class);
 
 it('registers a new user', function () {
     $response = $this->postJson('/api/register', [
