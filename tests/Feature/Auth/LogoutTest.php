@@ -15,6 +15,6 @@ it('logs out an authenticated user', function () {
     // Assert
     $response->assertOk()
              ->assertJson([
-                 'message' => 'Logged out successfully',
+                 'message' => 'Successfully logged out',
              ]);
 });
