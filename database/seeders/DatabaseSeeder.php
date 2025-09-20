@@ -15,9 +15,15 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
+    if (app()->environment('local')) {
         User::factory()->create([
             'name' => 'Test User',
             'email' => 'test@example.com',
         ]);
+    }
+
+        if (app()->environment('testing')) {
+            $this->call(\Database\Seeders\PassportTestingSeeder::class);
+        }
     }
 }
