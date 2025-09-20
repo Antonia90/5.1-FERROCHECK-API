@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Ingredient;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
 
 class IngredientController extends Controller
 {
@@ -26,7 +28,10 @@ class IngredientController extends Controller
             'iron_mg_per_100g' => 'required|numeric|min:0',
         ]);
 
-        $ingredient = Ingredient::create($validated);
+        $ingredient = Ingredient::create([
+            ...$validated,
+            'user_id' => Auth::id(),
+        ]);
 
         return response()->json($ingredient, 201);
     }

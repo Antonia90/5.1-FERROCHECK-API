@@ -10,7 +10,7 @@ beforeEach(function () {
 });
 
 it('lists all ingredients', function () {
-    Ingredient::factory()->count(3)->create();
+    Ingredient::factory()->count(3)->for($this->user)->create(); // 🔑 Asociado al user autenticado
 
     $response = $this->getJson('/api/ingredients');
 
@@ -19,7 +19,7 @@ it('lists all ingredients', function () {
 });
 
 it('shows a single ingredient', function () {
-    $ingredient = Ingredient::factory()->create([
+    $ingredient = Ingredient::factory()->for($this->user)->create([ // 🔑
         'ingredient_type' => 'verdura',
         'name' => 'Espinaca',
         'iron_mg_per_100g' => 2.7,
@@ -48,11 +48,13 @@ it('creates a new ingredient', function () {
     $response->assertCreated()
         ->assertJsonFragment($payload);
 
-    $this->assertDatabaseHas('ingredients', $payload);
+    $this->assertDatabaseHas('ingredients', array_merge($payload, [
+        'user_id' => $this->user->id, // 🔑 Verificación con user_id correcto
+    ]));
 });
 
 it('updates an ingredient', function () {
-    $ingredient = Ingredient::factory()->create([
+    $ingredient = Ingredient::factory()->for($this->user)->create([ // 🔑
         'ingredient_type' => 'proteina',
         'name' => 'Lentejas',
         'iron_mg_per_100g' => 3.3,
@@ -69,11 +71,14 @@ it('updates an ingredient', function () {
     $response->assertOk()
         ->assertJsonFragment($payload);
 
-    $this->assertDatabaseHas('ingredients', $payload);
+    $this->assertDatabaseHas('ingredients', array_merge($payload, [
+        'id' => $ingredient->id,
+        'user_id' => $this->user->id, // 🔑
+    ]));
 });
 
 it('deletes an ingredient', function () {
-    $ingredient = Ingredient::factory()->create();
+    $ingredient = Ingredient::factory()->for($this->user)->create(); // 🔑
 
     $response = $this->deleteJson("/api/ingredients/{$ingredient->id}");
 
