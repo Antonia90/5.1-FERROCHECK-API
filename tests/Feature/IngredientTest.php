@@ -91,8 +91,6 @@ it('deletes an ingredient', function () {
 
 describe('permissions', function () {
     it('prevents unauthenticated users from accessing ingredients', function () {
-        $this->postJson('/logout'); // forzamos logout si hay
-        auth()->logout();
 
         $response = $this->getJson('/api/ingredients');
         $response->assertUnauthorized(); // 401
@@ -102,17 +100,17 @@ describe('permissions', function () {
         $admin = User::factory()->create(['role' => 'admin']);
         $this->actingAs($admin, 'api');
 
-        $ingredient = Ingredient::factory()->create(); // de cualquier usuario
+        $ingredient = Ingredient::factory()->create();
 
         // Admin puede actualizar
         $payload = ['ingredient_type' => 'verdura', 'name' => 'Acelga', 'iron_mg_per_100g' => 2.0];
         $this->putJson("/api/ingredients/{$ingredient->id}", $payload)
-             ->assertOk()
-             ->assertJsonFragment($payload);
+            ->assertOk()
+            ->assertJsonFragment($payload);
 
         // Admin puede borrar
         $this->deleteJson("/api/ingredients/{$ingredient->id}")
-             ->assertNoContent();
+            ->assertNoContent();
     });
 
     it('allows user to manage only their own ingredients', function () {
@@ -122,10 +120,27 @@ describe('permissions', function () {
         // Usuario normal no puede modificar ni borrar ajenos
         $payload = ['ingredient_type' => 'fruta', 'name' => 'Pera', 'iron_mg_per_100g' => 0.2];
         $this->putJson("/api/ingredients/{$ingredient->id}", $payload)
-             ->assertForbidden();
+            ->assertForbidden();
 
         $this->deleteJson("/api/ingredients/{$ingredient->id}")
-             ->assertForbidden();
+            ->assertForbidden();
+    });
+
+    it('allows user to create and view their own ingredients', function () {
+        $payload = [
+            'ingredient_type' => 'fruta',
+            'name' => 'Banana',
+            'iron_mg_per_100g' => 0.3,
+        ];
+
+        // Crear
+        $response = $this->postJson('/api/ingredients', $payload);
+        $response->assertCreated()
+            ->assertJsonFragment($payload);
+
+        // Ver
+        $this->getJson('/api/ingredients')
+            ->assertOk()
+            ->assertJsonFragment(['name' => 'Banana']);
     });
 });
-
