@@ -10,13 +10,26 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+
+                User::factory()->admin()->create([
+            'name' => 'Admin User',
+            'email' => 'admin@example.com',
+            'password' => bcrypt('password'),
+        ]);
+
+        User::factory()->create([
+            'name' => 'Regular User',
+            'email' => 'user@example.com',
+            'password' => bcrypt('password'),
+        ]);
+
         if (app()->environment('local')) {
             User::factory()->create([
                 'name' => 'Test User',
                 'email' => 'test@example.com',
             ]);
 
-            $this->call(IngredientSeeder::class); // 🔑 solo en local
+            $this->call(IngredientSeeder::class);
         }
 
         if (app()->environment('testing')) {
