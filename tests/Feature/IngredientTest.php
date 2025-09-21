@@ -88,3 +88,44 @@ it('deletes an ingredient', function () {
         'id' => $ingredient->id,
     ]);
 });
+
+describe('permissions', function () {
+    it('prevents unauthenticated users from accessing ingredients', function () {
+        $this->postJson('/logout'); // forzamos logout si hay
+        auth()->logout();
+
+        $response = $this->getJson('/api/ingredients');
+        $response->assertUnauthorized(); // 401
+    });
+
+    it('allows admin to manage all ingredients', function () {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $this->actingAs($admin, 'api');
+
+        $ingredient = Ingredient::factory()->create(); // de cualquier usuario
+
+        // Admin puede actualizar
+        $payload = ['ingredient_type' => 'verdura', 'name' => 'Acelga', 'iron_mg_per_100g' => 2.0];
+        $this->putJson("/api/ingredients/{$ingredient->id}", $payload)
+             ->assertOk()
+             ->assertJsonFragment($payload);
+
+        // Admin puede borrar
+        $this->deleteJson("/api/ingredients/{$ingredient->id}")
+             ->assertNoContent();
+    });
+
+    it('allows user to manage only their own ingredients', function () {
+        $otherUser = User::factory()->create();
+        $ingredient = Ingredient::factory()->for($otherUser)->create();
+
+        // Usuario normal no puede modificar ni borrar ajenos
+        $payload = ['ingredient_type' => 'fruta', 'name' => 'Pera', 'iron_mg_per_100g' => 0.2];
+        $this->putJson("/api/ingredients/{$ingredient->id}", $payload)
+             ->assertForbidden();
+
+        $this->deleteJson("/api/ingredients/{$ingredient->id}")
+             ->assertForbidden();
+    });
+});
+
