@@ -9,6 +9,12 @@ use Illuminate\Support\Facades\Auth;
 
 class IngredientController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->authorizeResource(\App\Models\Ingredient::class, 'ingredient');
+    }
+
     /**
      * Display a listing of the resource.
      */
