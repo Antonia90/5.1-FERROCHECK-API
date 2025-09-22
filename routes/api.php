@@ -11,5 +11,6 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'user']);
 });
-
-Route::apiResource('ingredients', IngredientController::class);
+Route::middleware('auth:api')->group(function () {
+    Route::apiResource('ingredients', IngredientController::class);
+});
