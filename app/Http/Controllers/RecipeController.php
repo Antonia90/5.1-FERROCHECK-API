@@ -17,7 +17,7 @@ class RecipeController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Recipe::query();
+        $query = Recipe::with('ingredients');
 
         if ($request->has('diet_category')) {
             $query->where('diet_category', $request->diet_category);
@@ -36,14 +36,32 @@ class RecipeController extends Controller
             'description' => 'nullable|string',
             'diet_category' => 'required|in:vegana,vegetariana,omnivora',
             'base_servings' => 'required|integer|min:1',
+            'ingredients' => 'array|required',
+            'ingredients.*.id' => 'required|exists:ingredients,id',
+            'ingredients.*.unit' => 'required|string|max:50',
+            'ingredients.*.quantity_per_serving' => 'required|numeric|min:0',
         ]);
+
+        // $recipe = Recipe::create([
+        //     ...$validated,
+        //     'user_id' => Auth::id(),
+        // ]);
 
         $recipe = Recipe::create([
-            ...$validated,
-            'user_id' => Auth::id(),
+            'name' => $validated['name'],
+            'description' => $validated['description'] ?? null,
+            'diet_category' => $validated['diet_category'],
+            'base_servings' => $validated['base_servings'],
+            'user_id' => $request->user()->id,
         ]);
-
-        return response()->json($recipe, 201);
+        // Guardamos ingredientes en la tabla pivote
+        foreach ($validated['ingredients'] as $ingredientData) {
+            $recipe->ingredients()->attach($ingredientData['id'], [
+                'unit' => $ingredientData['unit'],
+                'quantity_per_serving' => $ingredientData['quantity_per_serving'],
+            ]);
+        }
+        return response()->json($recipe->load('ingredients'), 201);
     }
 
     /**
@@ -51,7 +69,7 @@ class RecipeController extends Controller
      */
     public function show(Recipe $recipe)
     {
-        return response()->json($recipe, 200);
+        return response()->json($recipe->Load('ingredients'), 200);
     }
 
     /**
@@ -64,11 +82,32 @@ class RecipeController extends Controller
             'description' => 'nullable|string',
             'diet_category' => 'required|in:vegana,vegetariana,omnivora',
             'base_servings' => 'required|integer|min:1',
+            'ingredients' => 'nullable|array',
+            'ingredients.*.id' => 'required_with:ingredients|exists:ingredients,id',
+            'ingredients.*.unit' => 'required_with:ingredients|string|max:50',
+            'ingredients.*.quantity_per_serving' => 'required_with:ingredients|numeric|min:0',
         ]);
 
-        $recipe->update($validated);
+        //$recipe->update($validated);
+        $recipe->update([
+            'name' => $validated['name'],
+            'description' => $validated['description'] ?? null,
+            'diet_category' => $validated['diet_category'],
+            'base_servings' => $validated['base_servings'],
+        ]);
 
-        return response()->json($recipe, 200);
+        if (isset($validated['ingredients'])) {
+            // Sincronizamos los ingredientes (borramos lo viejo y guardamos lo nuevo)
+            $syncData = [];
+            foreach ($validated['ingredients'] as $ingredientData) {
+                $syncData[$ingredientData['id']] = [
+                    'unit' => $ingredientData['unit'],
+                    'quantity_per_serving' => $ingredientData['quantity_per_serving'],
+                ];
+            }
+            $recipe->ingredients()->sync($syncData);
+        }
+        return response()->json($recipe->load('ingredients'), 200);
     }
 
     /**

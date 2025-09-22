@@ -41,22 +41,36 @@ it('shows a single recipe', function () {
 it('creates a new recipe', function () {
     $user = User::factory()->create();
     $this->actingAs($user, 'api');
-
+    $ingredient = Ingredient::factory()->create();
     $payload = [
         'name' => 'Guiso de garbanzos',
         'description' => 'Un guiso vegano con alto contenido en hierro',
         'diet_category' => 'vegana',
         'base_servings' => 4,
+        'ingredients' => [
+            [
+                'id' => $ingredient->id,
+                'unit' => 'g',
+                'quantity_per_serving' => 200,
+            ],
+        ],
     ];
 
     $response = $this->postJson('/api/recipes', $payload);
 
     $response->assertCreated()
-        ->assertJsonFragment($payload);
+        ->assertJsonFragment([
+            'name' => 'Guiso de garbanzos',
+            'diet_category' => 'vegana',
+            'base_servings' => 4,
+        ])
+        ->assertJsonPath('ingredients.0.pivot.unit', 'g')
+        ->assertJsonPath('ingredients.0.pivot.quantity_per_serving', 200);
 
-    $this->assertDatabaseHas('recipes', array_merge($payload, [
+    $this->assertDatabaseHas('recipes', [
+        'name' => 'Guiso de garbanzos',
         'user_id' => $user->id,
-    ]));
+    ]);
 });
 
 it('creates a recipe with ingredients', function () {
@@ -207,23 +221,38 @@ describe('permissions', function () {
     it('allows user to create and view their own recipes', function () {
         $user = User::factory()->create();
         $this->actingAs($user, 'api');
-
+        $ingredient = Ingredient::factory()->create();
         $payload = [
             'name' => 'Pizza vegetariana',
             'description' => 'Con masa integral y queso',
             'diet_category' => 'vegetariana',
             'base_servings' => 2,
+            'ingredients' => [
+                [
+                    'id' => $ingredient->id,
+                    'unit' => 'g',
+                    'quantity_per_serving' => 200,
+                ],
+            ],
         ];
 
         // Crear
         $response = $this->postJson('/api/recipes', $payload);
         $response->assertCreated()
-            ->assertJsonFragment($payload);
+            ->assertJsonFragment([
+                'name' => 'Pizza vegetariana',
+                'diet_category' => 'vegetariana',
+            ])
+            ->assertJsonPath('ingredients.0.pivot.unit', 'g')
+            ->assertJsonPath('ingredients.0.pivot.quantity_per_serving', 200);
 
         // Ver en listado
         $this->getJson('/api/recipes')
             ->assertOk()
-            ->assertJsonFragment(['name' => 'Pizza vegetariana']);
+            ->assertJsonFragment([
+                'name' => 'Pizza vegetariana',
+                'diet_category' => 'vegetariana',
+            ]);
     });
 });
 
