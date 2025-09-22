@@ -20,4 +20,11 @@ class Ingredient extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function recipes()
+{
+    return $this->belongsToMany(Recipe::class, 'recipe_ingredients')
+                ->withPivot('unit', 'quantity_per_serving')
+                ->withTimestamps();
+}
 }
