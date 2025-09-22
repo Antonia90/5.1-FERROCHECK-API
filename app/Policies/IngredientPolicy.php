@@ -21,7 +21,7 @@ class IngredientPolicy
      */
     public function view(User $user, Ingredient $ingredient): bool
     {
-        return true;
+        return $user->id === $ingredient->user_id || $user->role === 'admin';
     }
 
     /**
