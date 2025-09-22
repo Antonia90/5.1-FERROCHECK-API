@@ -59,6 +59,62 @@ it('creates a new recipe', function () {
     ]));
 });
 
+it('creates a recipe with ingredients', function () {
+    $user = User::factory()->create();
+    $this->actingAs($user, 'api');
+
+    $ingredient1 = Ingredient::factory()->for($user)->create();
+    $ingredient2 = Ingredient::factory()->for($user)->create();
+
+    $payload = [
+        'name' => 'Ensalada de garbanzos',
+        'description' => 'Receta fresca y rica en hierro',
+        'diet_category' => 'vegana',
+        'base_servings' => 2,
+        'ingredients' => [
+            [
+                'id' => $ingredient1->id,
+                'unit' => 'g',
+                'quantity_per_serving' => 100,
+            ],
+            [
+                'id' => $ingredient2->id,
+                'unit' => 'ml',
+                'quantity_per_serving' => 50,
+            ],
+        ],
+    ];
+
+    $response = $this->postJson('/api/recipes', $payload);
+
+    $response->assertCreated()
+        ->assertJsonFragment([
+            'name' => 'Ensalada de garbanzos',
+            'diet_category' => 'vegana',
+        ]);
+
+    // Verificamos que la receta se creó en DB
+    $this->assertDatabaseHas('recipes', [
+        'name' => 'Ensalada de garbanzos',
+        'user_id' => $user->id,
+    ]);
+
+    // Verificamos que los ingredientes se asociaron en la tabla pivote
+    $this->assertDatabaseHas('recipe_ingredients', [
+        'recipe_id' => Recipe::first()->id,
+        'ingredient_id' => $ingredient1->id,
+        'unit' => 'g',
+        'quantity_per_serving' => 100,
+    ]);
+
+    $this->assertDatabaseHas('recipe_ingredients', [
+        'recipe_id' => Recipe::first()->id,
+        'ingredient_id' => $ingredient2->id,
+        'unit' => 'ml',
+        'quantity_per_serving' => 50,
+    ]);
+});
+
 it('updates a recipe owned by the user', function () {
     $user = User::factory()->create();
     $this->actingAs($user, 'api');
