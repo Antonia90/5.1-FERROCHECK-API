@@ -9,6 +9,12 @@ use Illuminate\Support\Facades\Auth;
 
 class IngredientController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->authorizeResource(\App\Models\Ingredient::class, 'ingredient');
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -39,18 +45,18 @@ class IngredientController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Ingredient $ingredient)
     {
-        $ingredient = Ingredient::findOrFail($id);
+        //$ingredient = Ingredient::findOrFail($id);
         return response()->json($ingredient, 200);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Ingredient $ingredient)
     {
-        $ingredient = Ingredient::findOrFail($id);
+        //$ingredient = Ingredient::findOrFail($id);
 
         $validated = $request->validate([
             'ingredient_type' => 'required|in:verdura,fruta,proteina,lacteo,condimento,otro',
@@ -66,9 +72,9 @@ class IngredientController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Ingredient $ingredient)
     {
-        $ingredient = Ingredient::findOrFail($id);
+        //$ingredient = Ingredient::findOrFail($id);
         $ingredient->delete();
 
         return response()->noContent();
