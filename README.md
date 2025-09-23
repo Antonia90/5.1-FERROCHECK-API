@@ -1,61 +1,171 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# FerroCheck API
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+FerroCheck is a RESTful API built with **Laravel** that helps users track their daily iron intake through recipes and ingredients.  
+The app allows creating ingredients, building recipes from those ingredients, and running a **daily check** to compare consumed iron with recommended dietary requirements.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Features
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- **Authentication**
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- User registration, login, and logout (token-based).
+- Profile management.
+- Role-based permissions (user, admin).
 
-## Learning Laravel
+- **Ingredients**
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- Full CRUD for ingredients.
+- Each ingredient stores type, name, and iron content per 100g.
+- Users can only manage their own ingredients; admins can manage all.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+- **Recipes**
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- Full CRUD for recipes.
+- Recipes are composed of multiple ingredients with units and quantities.
+- Support for diet categories: `vegan`, `vegetarian`, `omnivorous`.
+- Filters by diet category.
+- Users can only edit/delete their own recipes; admins can manage all.
 
-## Laravel Sponsors
+- **Daily Check**
+- Select up to **8 recipes** consumed in a day.
+- Specify number of servings per recipe.
+- Compare total iron intake against a chosen category (e.g. `woman_premenopausal`, `woman_postmenopausal`, `man_adult`, `pregnant`).
+- Response includes:
+        -   `total_iron_mg`
+        -   `required_mg`
+        -   `status` (`sufficient` / `insufficient`)
+        -   `difference_mg`
+        -   A friendly message.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+---
 
-### Premium Partners
+## Tech Stack
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+- [Laravel 12](https://laravel.com) – PHP framework
+- [MySQL](https://www.mysql.com/) – Database
+- [Pest](https://pestphp.com/) – Testing framework
+- Token Authentication (Laravel Passport)
 
-## Contributing
+---
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Installation and Setup
 
-## Code of Conduct
+### Prerequisites
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+- PHP >= 8.2
 
-## Security Vulnerabilities
+- Composer >= 2.5
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+- MySQL >= 8.0
 
-## License
+- Laravel 12.x
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+- Git
+
+### 1. Clone the repository
+
+git clone <https://github.com/Antonia90/ferrocheck-api.git>
+cd ferrocheck-api
+
+### 2. Install dependencies
+
+    composer install
+
+### 3. Configure environment
+
+    cp .env.example .env
+    php artisan key:generate
+
+### 4. Set your database credentials in .env and run migrations
+
+    php artisan migrate --seed
+
+### 5. Run the development server
+
+    php artisan serve
+
+### API Endpoints
+
+## Authentication
+
+- POST /api/register → Register a new user
+
+- POST /api/login → Login
+
+- POST /api/logout → Logout
+
+- GET /api/user → Get authenticated user profile
+
+## Ingredients
+
+- GET /api/ingredients → List ingredients
+
+- GET /api/ingredients/{id} → Show ingredient
+
+- POST /api/ingredients → Create ingredient
+
+- PUT /api/ingredients/{id} → Update ingredient
+
+- DELETE /api/ingredients/{id} → Delete ingredient
+
+## Recipes
+
+- GET /api/recipes → List recipes (supports ?diet_category=vegana)
+
+- GET /api/recipes/{id} → Show recipe with ingredients
+
+- POST /api/recipes → Create recipe (with ingredients)
+
+- PUT /api/recipes/{id} → Update recipe and its ingredients
+
+- DELETE /api/recipes/{id} → Delete recipe
+
+## Daily Check
+
+- POST /api/daily-check
+
+### Testing
+
+Run the test suite with Pest:
+
+php artisan test
+
+vendor/bin/pest
+
+## How to Test the API with Postman
+
+1. **Import the Collection**
+
+    - Download from [http://localhost:8000/docs.postman](http://localhost:8000/docs.postman)
+    - In Postman, click "Import" and select the downloaded file.
+
+2. **Set the Base URL**
+
+    - Make sure the `baseUrl` variable in Postman is set to `http://localhost:8000` (or your server address).
+
+3. **Authentication Flow**
+    - Register a user via `POST /api/register` (or use demo credentials).
+    - Log in via `POST /api/login` to obtain an `access_token`.
+    - For all protected endpoints, add this header:
+
+ ```Authorization: Bearer {access_token}```
+
+4.**Try the Endpoints**
+    - Test all endpoints: fields, bookings, statistics, etc.
+
+5.**Troubleshooting**
+    - `401 Unauthorized`: Make sure you included the correct token and updated the Passport client details in your `.env` file.
+    - `422 Unprocessable Entity`: Check required fields and validation rules in the docs.
+
+---
+
+## Common Issues & Solutions
+
+1. **Failed to listen on 127.0.0.1:8000**: Another process is using the port. Try `php artisan serve --port=8080`.
+
+2. **PHP Version Compatibility**: This project requires PHP 8.2.x. If you have PHP 8.4.x installed, you may encounter issues.
+
+### License
+
+This project is licensed under the MIT License.
