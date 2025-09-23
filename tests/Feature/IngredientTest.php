@@ -101,6 +101,22 @@ it('deletes an ingredient', function () {
     ]);
 });
 
+it('rejects invalid ingredient data', function () {
+    $user = \App\Models\User::factory()->create();
+    $this->actingAs($user, 'api');
+
+    $payload = [
+        'ingredient_type' => 'invalid_type',
+        'name' => '',
+        'iron_mg_per_100g' => -5,
+    ];
+
+    $response = $this->postJson('/api/ingredients', $payload);
+
+    $response->assertStatus(422)
+        ->assertJsonValidationErrors(['ingredient_type', 'name', 'iron_mg_per_100g']);
+});
+
 describe('permissions', function () {
     it('prevents unauthenticated users from accessing ingredients', function () {
 

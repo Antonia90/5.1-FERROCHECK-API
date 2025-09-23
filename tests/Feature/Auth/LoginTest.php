@@ -16,3 +16,17 @@ it('allows a person to log in', function () {
     $response->assertOk()
              ->assertJsonStructure(['token']);
 });
+
+it('rejects login with wrong credentials', function () {
+    User::factory()->create([
+        'email' => 'test@example.com',
+        'password' => bcrypt('correct-password'),
+    ]);
+
+    $response = $this->postJson('/api/login', [
+        'email' => 'test@example.com',
+        'password' => 'wrong-password',
+    ]);
+
+    $response->assertStatus(401);
+});
