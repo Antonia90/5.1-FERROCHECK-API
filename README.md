@@ -7,19 +7,19 @@ The app allows creating ingredients, building recipes from those ingredients, an
 
 ## Features
 
-- **Authentication**
+### **Authentication**
 
 - User registration, login, and logout (token-based).
 - Profile management.
 - Role-based permissions (user, admin).
 
-- **Ingredients**
+### **Ingredients**
 
 - Full CRUD for ingredients.
 - Each ingredient stores type, name, and iron content per 100g.
 - Users can only manage their own ingredients; admins can manage all.
 
-- **Recipes**
+### **Recipes**
 
 - Full CRUD for recipes.
 - Recipes are composed of multiple ingredients with units and quantities.
@@ -27,7 +27,8 @@ The app allows creating ingredients, building recipes from those ingredients, an
 - Filters by diet category.
 - Users can only edit/delete their own recipes; admins can manage all.
 
-- **Daily Check**
+### **Daily Check**
+
 - Select up to **8 recipes** consumed in a day.
 - Specify number of servings per recipe.
 - Compare total iron intake against a chosen category (e.g. `woman_premenopausal`, `woman_postmenopausal`, `man_adult`, `pregnant`).
@@ -54,13 +55,9 @@ The app allows creating ingredients, building recipes from those ingredients, an
 ### Prerequisites
 
 - PHP >= 8.2
-
 - Composer >= 2.5
-
 - MySQL >= 8.0
-
 - Laravel 12.x
-
 - Git
 
 ### 1. Clone the repository
@@ -90,35 +87,24 @@ cd ferrocheck-api
 ## Authentication
 
 - POST /api/register → Register a new user
-
 - POST /api/login → Login
-
 - POST /api/logout → Logout
-
 - GET /api/user → Get authenticated user profile
 
 ## Ingredients
 
 - GET /api/ingredients → List ingredients
-
 - GET /api/ingredients/{id} → Show ingredient
-
 - POST /api/ingredients → Create ingredient
-
 - PUT /api/ingredients/{id} → Update ingredient
-
 - DELETE /api/ingredients/{id} → Delete ingredient
 
 ## Recipes
 
 - GET /api/recipes → List recipes (supports ?diet_category=vegana)
-
 - GET /api/recipes/{id} → Show recipe with ingredients
-
 - POST /api/recipes → Create recipe (with ingredients)
-
 - PUT /api/recipes/{id} → Update recipe and its ingredients
-
 - DELETE /api/recipes/{id} → Delete recipe
 
 ## Daily Check
