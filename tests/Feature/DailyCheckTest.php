@@ -18,7 +18,7 @@ it('validates the input data', function () {
     // Más de 8 recetas
     $recipes = Recipe::factory()->count(9)->create();
     $payload = [
-        'recipes' => $recipes->map(fn ($r) => ['id' => $r->id, 'servings' => 1]),
+        'recipes' => $recipes->map(fn($r) => ['id' => $r->id, 'servings' => 1]),
         'category' => 'woman_premenopausal',
     ];
     $response = $this->postJson('/api/daily-check', $payload);
@@ -30,6 +30,30 @@ it('validates the input data', function () {
         'category' => 'invalid',
     ]);
     $response->assertStatus(422);
+});
+
+it('rejects servings less than 1 in daily check', function () {
+    $user = User::factory()->create();
+    $this->actingAs($user, 'api');
+
+    $ingredient = Ingredient::factory()->create(['iron_mg_per_100g' => 10]);
+    $recipe = Recipe::factory()->for($user)->create();
+    $recipe->ingredients()->attach($ingredient->id, [
+        'unit' => 'g',
+        'quantity_per_serving' => 100,
+    ]);
+
+    $payload = [
+        'recipes' => [
+            ['id' => $recipe->id, 'servings' => 0], // ❌ invalid
+        ],
+        'category' => 'woman_premenopausal',
+    ];
+
+    $response = $this->postJson('/api/daily-check', $payload);
+
+    $response->assertStatus(422)
+        ->assertJsonValidationErrors(['recipes.0.servings']);
 });
 
 it('calculates total iron and compares with requirement', function () {
