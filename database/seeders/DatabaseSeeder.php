@@ -22,10 +22,13 @@ class DatabaseSeeder extends Seeder
             ]);
 
             $this->call(IngredientSeeder::class);
+            $this->call(PassportClientSeeder::class);
         }
 
         if (app()->environment('testing')) {
             $this->call(\Database\Seeders\PassportTestingSeeder::class);
         }
+
+        
     }
 }
