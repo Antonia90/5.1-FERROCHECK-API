@@ -82,35 +82,6 @@ cd ferrocheck-api
 
     php artisan serve
 
-### API Endpoints
-
-## Authentication
-
-- POST /api/register → Register a new user
-- POST /api/login → Login
-- POST /api/logout → Logout
-- GET /api/user → Get authenticated user profile
-
-## Ingredients
-
-- GET /api/ingredients → List ingredients
-- GET /api/ingredients/{id} → Show ingredient
-- POST /api/ingredients → Create ingredient
-- PUT /api/ingredients/{id} → Update ingredient
-- DELETE /api/ingredients/{id} → Delete ingredient
-
-## Recipes
-
-- GET /api/recipes → List recipes (supports ?diet_category=vegana)
-- GET /api/recipes/{id} → Show recipe with ingredients
-- POST /api/recipes → Create recipe (with ingredients)
-- PUT /api/recipes/{id} → Update recipe and its ingredients
-- DELETE /api/recipes/{id} → Delete recipe
-
-## Daily Check
-
-- POST /api/daily-check
-
 ### Testing
 
 Run the test suite with Pest:
@@ -138,7 +109,33 @@ vendor/bin/pest
  ```Authorization: Bearer {access_token}```
 
 4.**Try the Endpoints**
-    - Test all endpoints: fields, bookings, statistics, etc.
+
+## Authentication
+
+- POST /api/register → Register a new user
+- POST /api/login → Login
+- POST /api/logout → Logout
+- GET /api/user → Get authenticated user profile
+
+## Ingredients
+
+- GET /api/ingredients → List ingredients
+- GET /api/ingredients/{id} → Show ingredient
+- POST /api/ingredients → Create ingredient
+- PUT /api/ingredients/{id} → Update ingredient
+- DELETE /api/ingredients/{id} → Delete ingredient
+
+## Recipes
+
+- GET /api/recipes → List recipes (supports ?diet_category=vegana)
+- GET /api/recipes/{id} → Show recipe with ingredients
+- POST /api/recipes → Create recipe (with ingredients)
+- PUT /api/recipes/{id} → Update recipe and its ingredients
+- DELETE /api/recipes/{id} → Delete recipe
+
+## Daily Check
+
+- POST /api/daily-check
 
 5.**Troubleshooting**
     - `401 Unauthorized`: Make sure you included the correct token and updated the Passport client details in your `.env` file.
