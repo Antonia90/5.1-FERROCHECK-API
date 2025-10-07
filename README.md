@@ -10,8 +10,16 @@ The app allows creating ingredients, building recipes from those ingredients, an
 ### **Authentication**
 
 - User registration, login, and logout (token-based).
-- Profile management.
-- Role-based permissions (user, admin).
+- Profile management using Personal Access Token.
+- Authenticated profile endpoint api/user.
+
+### **Roles and Permissions**
+
+- Role management via Spatie Laravel Permission (spatie/laravel-permission: ^6.21).
+- Two default roles:
+ -Admin: full access to all resources.
+ -User: can only manage their own ingredients and recipes.
+- Access control enforced through Laravel Policies (IngredientPolicy, RecipePolicy).
 
 ### **Ingredients**
 
@@ -47,6 +55,7 @@ The app allows creating ingredients, building recipes from those ingredients, an
 - [MySQL](https://www.mysql.com/) – Database
 - [Pest](https://pestphp.com/) – Testing framework
 - Token Authentication (Laravel Passport)
+- Spatie Laravel Permission – Role management
 
 ---
 
@@ -73,12 +82,21 @@ cd ferrocheck-api
 
     cp .env.example .env
     php artisan key:generate
+    Set your .env file with MySQL credentials and update.
 
-### 4. Set your database credentials in .env and run migrations
+### 4. Run Passport Installation (if needed)
+
+If you’re setting up for the first time:
+
+php artisan passport:install
+
+This creates client credentials required for token generation.
+
+### 5. Set your database credentials in .env and run migrations
 
     php artisan migrate --seed
 
-### 5. Run the development server
+### 6. Run the development server
 
     php artisan serve
 
@@ -89,6 +107,15 @@ Run the test suite with Pest:
 php artisan test
 
 vendor/bin/pest
+
+Testing uses SQLite (ferrocheck_api_testing) and seeds its own Passport client via PassportTestingSeeder.
+
+### Data Generation
+
+This project uses both **seeders** and **factories**:
+
+- **Factories** generate fake data dynamically during automated tests.
+- **Seeders** populate the database with predefined demo data (users, ingredients, roles, Passport client).
 
 ## How to Test the API with Postman
 
@@ -113,7 +140,9 @@ vendor/bin/pest
 ## Authentication
 
 - POST /api/register → Register a new user
+- Body: { "name": "User", "email": <user@example.com>, "password": "password", "password_confirmation": "password" }
 - POST /api/login → Login
+- Body: { "email": <user@example.com>, "password": "password" }
 - POST /api/logout → Logout
 - GET /api/user → Get authenticated user profile
 
@@ -124,6 +153,12 @@ vendor/bin/pest
 - POST /api/ingredients → Create ingredient
 - PUT /api/ingredients/{id} → Update ingredient
 - DELETE /api/ingredients/{id} → Delete ingredient
+- Body:
+{
+  "ingredient_type": "proteina",
+  "name": "Lentils",
+  "iron_mg_per_100g": 3.3
+}
 
 ## Recipes
 
@@ -136,10 +171,23 @@ vendor/bin/pest
 ## Daily Check
 
 - POST /api/daily-check
+- Body:
+
+{
+  "recipes": [
+    { "recipe_id": 1, "servings": 2 },
+    { "recipe_id": 3, "servings": 1 }
+  ],
+  "user_category": "woman_premenopausal"
+}
 
 5.**Troubleshooting**
-    - `401 Unauthorized`: Make sure you included the correct token and updated the Passport client details in your `.env` file.
-    - `422 Unprocessable Entity`: Check required fields and validation rules in the docs.
+
+- `401 Unauthorized`: Make sure you included the correct token and updated the Passport client details in your `.env` file.
+
+- `422 Unprocessable Entity`: Check required fields and validation rules in the docs
+
+- `500 Internal Server Error` Passport misconfiguration Ensure provider='users' in oauth_clients
 
 ---
 
