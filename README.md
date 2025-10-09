@@ -82,15 +82,16 @@ cd ferrocheck-api
 
     cp .env.example .env
     php artisan key:generate
-    Set your .env file with MySQL credentials and update.
+
+ Set your .env file with MySQL credentials and update.
 
 ### 4. Run Passport Installation (if needed)
 
 If you’re setting up for the first time:
 
-php artisan passport:install
-php artisan passport:keys
-php artisan passport:client --personal
+    php artisan passport:install
+    php artisan passport:keys
+    php artisan passport:client --personal
 
 This creates client credentials required for token generation.
 
@@ -100,35 +101,35 @@ This creates client credentials required for token generation.
 
 ### 6. Reset Spatie permission cache
 
-php artisan permission:cache-reset
+    php artisan permission:cache-reset
 
 ### 7. Run the development server
 
     php artisan serve
 
-### Testing
+## Testing
 
-## 1. Prepare testing environment
+### 1. Prepare testing environment
 
-cp .env .env.testing
+    cp .env .env.testing
 
 Set in .env.testing:
 
-DB_DATABASE=ferrocheck_api_testing
-DB_USERNAME=root
-DB_PASSWORD=
+    DB_DATABASE=ferrocheck_api_testing
+    DB_USERNAME=root
+    DB_PASSWORD=
 
-## 2. Run test migrations
+### 2. Run test migrations
 
-php artisan migrate:fresh --seed --env=testing
+    php artisan migrate:fresh --seed --env=testing
 
 Run the test suite with Pest:
 
-php artisan test
+    php artisan test
 
 Testing uses SQLite (ferrocheck_api_testing) and seeds its own Passport client via PassportTestingSeeder.
 
-### Data Generation
+## Data Generation
 
 This project uses both **seeders** and **factories**:
 
