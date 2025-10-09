@@ -65,7 +65,7 @@ it('creates a new recipe', function () {
             'base_servings' => 4,
         ])
         ->assertJsonPath('ingredients.0.pivot.unit', 'g')
-        ->assertJsonPath('ingredients.0.pivot.quantity_per_serving', 200);
+        ->assertJsonPath('ingredients.0.pivot.quantity_per_serving', "200.00");
 
     $this->assertDatabaseHas('recipes', [
         'name' => 'Guiso de garbanzos',
@@ -244,7 +244,7 @@ describe('permissions', function () {
                 'diet_category' => 'vegetariana',
             ])
             ->assertJsonPath('ingredients.0.pivot.unit', 'g')
-            ->assertJsonPath('ingredients.0.pivot.quantity_per_serving', 200);
+            ->assertJsonPath('ingredients.0.pivot.quantity_per_serving', "200.00");
 
         // Ver en listado
         $this->getJson('/api/recipes')
