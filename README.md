@@ -71,8 +71,8 @@ The app allows creating ingredients, building recipes from those ingredients, an
 
 ### 1. Clone the repository
 
-git clone <https://github.com/Antonia90/ferrocheck-api.git>
-cd ferrocheck-api
+    git clone <https://github.com/Antonia90/5.1-FERROCHECK-API.git>
+    cd 5.1-FERROCHECK-API
 
 ### 2. Install dependencies
 
@@ -85,15 +85,24 @@ cd ferrocheck-api
 
  Set your .env file with MySQL credentials and update.
 
-### 4. Run Passport Installation (if needed)
+### 4. Run Passport Installation
 
-If you’re setting up for the first time:
+Passport handles API authentication and token management.
+
+If you’re setting up the project for the very first time (on a clean machine with no existing /database/migrations/oauth_* files), run:
 
     php artisan passport:install
-    php artisan passport:keys
+
+⚠️ Note:
+    This project already includes Passport’s migration files (create_oauth_*).
+    If you can see these files inside your /database/migrations folder, you don’t need to run passport:install again.
+    Simply skip this step and continue below.
+
+If you skipped the previous command, make sure to create a personal access client manually:
+
     php artisan passport:client --personal
 
-This creates client credentials required for token generation.
+This creates the client credentials required for token generation.
 
 ### 5. Set your database credentials in .env and run migrations
 
@@ -111,15 +120,7 @@ This creates client credentials required for token generation.
 
 ### 1. Prepare testing environment
 
-    cp .env .env.testing
-
-Set in .env.testing:
-
-    DB_DATABASE=ferrocheck_api_testing
-    DB_USERNAME=root
-    DB_PASSWORD=
-
-### 2. Run test migrations
+### Run test migrations
 
     php artisan migrate:fresh --seed --env=testing
 
