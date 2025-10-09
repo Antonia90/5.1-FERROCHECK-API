@@ -99,6 +99,7 @@ If you’re setting up the project for the very first time (on a clean machine w
     Simply skip this step and continue below.
 
 If you skipped the previous command, make sure to create a personal access client manually:
+
     php artisan migrate
     php artisan passport:keys --force
     php artisan passport:client --personal
