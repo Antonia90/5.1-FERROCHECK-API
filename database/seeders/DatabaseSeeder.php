@@ -11,8 +11,8 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // --- Roles y permisos básicos ---
-        Role::firstOrCreate(['name' => 'admin']);
-        Role::firstOrCreate(['name' => 'user']);
+        Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'api']);
+        Role::firstOrCreate(['name' => 'user', 'guard_name' => 'api']);
 
         // --- Entorno local ---
         if (app()->environment('local')) {
